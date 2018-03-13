@@ -8,6 +8,14 @@
 
 #import "XLCircle.h"
 
+/**
+ 颜色相关
+ */
+#define kUIColorFromRGB(rgbValue) [UIColor \
+colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+
 #define RGB(r, g, b) [UIColor colorWithRed:r/255.0 green:g/255.0 blue:b/255.0 alpha:1.0]
 
 static CGFloat endPointMargin = 1.0f;
@@ -28,28 +36,27 @@ static CGFloat endPointMargin = 1.0f;
     self = [super initWithFrame:frame];
     if (self) {
         _lineWidth = lineWidth;
-        self.backgroundColor = [UIColor whiteColor];
         [self buildLayout];
     }
     return self;
 }
 
--(void)buildLayout
-{
+- (void)buildLayout {
     float centerX = self.bounds.size.width/2.0;
     float centerY = self.bounds.size.height/2.0;
     //半径
-    float radius = (self.bounds.size.width-_lineWidth)/2.0;
+    float radius = (self.bounds.size.width - _lineWidth)/2.0;
     
     //创建贝塞尔路径
     UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(centerX, centerY) radius:radius startAngle:(0.8f*M_PI) endAngle:2.8f*M_PI clockwise:YES];
     
     //添加背景圆环
-
     CAShapeLayer *backLayer = [CAShapeLayer layer];
     backLayer.frame = self.bounds;
-    backLayer.fillColor =  [[UIColor clearColor] CGColor];
-    backLayer.strokeColor  = [UIColor blackColor].CGColor;
+    //设置填充色
+    backLayer.fillColor = [[UIColor clearColor] CGColor];
+    //设置描边色
+    backLayer.strokeColor = RGB(47,54,69).CGColor;
     backLayer.lineWidth = _lineWidth;
     backLayer.path = [path CGPath];
     backLayer.strokeEnd = 1;
@@ -69,7 +76,7 @@ static CGFloat endPointMargin = 1.0f;
     //设置渐变颜色
     CAGradientLayer *gradientLayer =  [CAGradientLayer layer];
     gradientLayer.frame = self.bounds;
-    [gradientLayer setColors:[NSArray arrayWithObjects:(id)[[UIColor whiteColor] CGColor],(id)[[UIColor redColor] CGColor],(id)[[UIColor grayColor] CGColor], (id)[[UIColor orangeColor] CGColor],(id)[[UIColor yellowColor] CGColor],(id)[[UIColor blueColor] CGColor],nil]];
+    [gradientLayer setColors:[NSArray arrayWithObjects:(id)[kUIColorFromRGB(0x3EFFEF) CGColor],(id)[RGB(66, 207, 242) CGColor],(id)[RGB(62, 186, 244) CGColor],nil]];
     gradientLayer.startPoint = CGPointMake(0, 0);
     gradientLayer.endPoint = CGPointMake(0, 1);
     [gradientLayer setMask:_progressLayer]; //用progressLayer来截取渐变层
@@ -79,17 +86,17 @@ static CGFloat endPointMargin = 1.0f;
     //用于显示结束位置的小点
     _endPoint = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _lineWidth *1.5 - endPointMargin*2,_lineWidth *1.5 - endPointMargin*2)];
     _endPoint.hidden = true;
-    _endPoint.backgroundColor = [UIColor whiteColor];
+    _endPoint.backgroundColor = [UIColor blackColor];
     _endPoint.layer.cornerRadius = (_lineWidth *1.5 - endPointMargin*2)/2;
     _endPoint.layer.masksToBounds = YES;
-    _endPoint.layer.borderWidth = 3;
-    _endPoint.layer.borderColor = [UIColor redColor].CGColor;
+    _endPoint.layer.borderWidth = 6;
+    _endPoint.layer.borderColor = kUIColorFromRGB(0x06f0d4).CGColor;
     [self addSubview:_endPoint];
 }
 
 -(void)setProgress:(float)progress
 {
-    _progress = progress;
+//    _progress = progress;
     _progressLayer.strokeEnd = progress;
     [self updateEndPoint];
     [_progressLayer removeAllAnimations];
