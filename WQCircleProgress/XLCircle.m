@@ -46,22 +46,8 @@ static CGFloat endPointMargin = 1.0f;
     float centerY = self.bounds.size.height/2.0;
     //半径
     float radius = (self.bounds.size.width - _lineWidth)/2.0;
-    
     //创建贝塞尔路径
-    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(centerX, centerY) radius:radius startAngle:(0.8f*M_PI) endAngle:2.8f*M_PI clockwise:YES];
-    
-    //添加背景圆环
-    CAShapeLayer *backLayer = [CAShapeLayer layer];
-    backLayer.frame = self.bounds;
-    //设置填充色
-    backLayer.fillColor = [[UIColor clearColor] CGColor];
-    //设置描边色
-    backLayer.strokeColor = RGB(47,54,69).CGColor;
-    backLayer.lineWidth = _lineWidth;
-    backLayer.path = [path CGPath];
-    backLayer.strokeEnd = 1;
-    [self.layer addSublayer:backLayer];
-    
+    UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:CGPointMake(centerX, centerY) radius:radius startAngle:(0.67f*M_PI) endAngle:2.33f*M_PI clockwise:YES];
     //创建进度layer
     _progressLayer = [CAShapeLayer layer];
     _progressLayer.frame = self.bounds;
@@ -76,34 +62,32 @@ static CGFloat endPointMargin = 1.0f;
     //设置渐变颜色
     CAGradientLayer *gradientLayer =  [CAGradientLayer layer];
     gradientLayer.frame = self.bounds;
-    [gradientLayer setColors:[NSArray arrayWithObjects:(id)[kUIColorFromRGB(0x3EFFEF) CGColor],(id)[RGB(66, 207, 242) CGColor],(id)[RGB(62, 186, 244) CGColor],nil]];
+    [gradientLayer setColors:[NSArray arrayWithObjects:(id)[kUIColorFromRGB(0x3EFFEF) CGColor],(id)[RGB(62, 186, 244) CGColor],nil]];
     gradientLayer.startPoint = CGPointMake(0, 0);
     gradientLayer.endPoint = CGPointMake(0, 1);
     [gradientLayer setMask:_progressLayer]; //用progressLayer来截取渐变层
     [self.layer addSublayer:gradientLayer];
     
-    
     //用于显示结束位置的小点
     _endPoint = [[UIView alloc] initWithFrame:CGRectMake(0, 0, _lineWidth *1.5 - endPointMargin*2,_lineWidth *1.5 - endPointMargin*2)];
-    _endPoint.hidden = true;
+    _endPoint.hidden = YES;
     _endPoint.backgroundColor = [UIColor blackColor];
     _endPoint.layer.cornerRadius = (_lineWidth *1.5 - endPointMargin*2)/2;
     _endPoint.layer.masksToBounds = YES;
-    _endPoint.layer.borderWidth = 6;
+    _endPoint.layer.borderWidth = 2;
     _endPoint.layer.borderColor = kUIColorFromRGB(0x06f0d4).CGColor;
     [self addSubview:_endPoint];
 }
 
--(void)setProgress:(float)progress
-{
-//    _progress = progress;
+- (void)setProgress:(float)progress {
+    _progress = progress;
     _progressLayer.strokeEnd = progress;
     [self updateEndPoint];
     [_progressLayer removeAllAnimations];
     [self stareLayerAnimation];
 }
 
-- (void)stareLayerAnimation{
+- (void)stareLayerAnimation {
     CABasicAnimation *anim1 = [CABasicAnimation animation];
     anim1.keyPath = @"transform.rotation";
     anim1.toValue = @(-2* M_PI);
@@ -118,7 +102,7 @@ static CGFloat endPointMargin = 1.0f;
     CAAnimationGroup *animationGroup = [CAAnimationGroup animation];
     animationGroup.duration = 1.0f;
     animationGroup.autoreverses = NO;   //是否重播，原动画的倒播
-    animationGroup.repeatCount = 1;//HUGE_VALF;     //HUGE_VALF,源自math.h
+    animationGroup.repeatCount = 1;
     animationGroup.delegate = self;
     animationGroup.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
     [animationGroup setAnimations:[NSArray arrayWithObjects:anim1, opacityAnimation, nil]];
@@ -127,7 +111,6 @@ static CGFloat endPointMargin = 1.0f;
 - (void)endPiontStarAnimation{
     // 先缩小
     _endPoint.transform = CGAffineTransformMakeScale(1.5, 1.5);
-    
     // 弹簧动画，参数分别为：时长，延时，弹性（越小弹性越大），初始速度
     [UIView animateWithDuration: 0.7 delay:0 usingSpringWithDamping:0.3 initialSpringVelocity:0.3 options:0 animations:^{
         // 放大
@@ -142,14 +125,14 @@ static CGFloat endPointMargin = 1.0f;
         [self endPiontStarAnimation];
   
 }
+
 //更新小点的位置
--(void)updateEndPoint
-{
+- (void)updateEndPoint {
     //转成弧度
-    CGFloat angle = M_PI*2*_progress + 0.5*M_PI;
+    CGFloat angle = M_PI*1.66*_progress + 0.5*M_PI ;
     float radius = (self.bounds.size.width-_lineWidth)/2.0;
     int index = (angle)/M_PI_2;//用户区分在第几象限内
-    float needAngle = (angle +.3*M_PI) - index*M_PI_2;//用于计算正弦/余弦的角度
+    float needAngle = (angle +.17*M_PI) - index*M_PI_2;//用于计算正弦/余弦的角度
     float x = 0,y = 0;//用于保存_dotView的frame
     switch (index) {
         case 1:

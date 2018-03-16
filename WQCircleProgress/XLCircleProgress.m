@@ -83,7 +83,7 @@ blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
 
 - (XLCircle *)circle {
     if (!_circle) {
-        _circle = [[XLCircle alloc] initWithFrame:self.bounds lineWidth:10];
+        _circle = [[XLCircle alloc] initWithFrame:self.bounds lineWidth:8];
         _circle.backgroundColor = [UIColor clearColor];
     }
     return _circle;

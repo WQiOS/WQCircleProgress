@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
 s.name         = "WQCircleProgress"
-s.version      = "0.0.2"
+s.version      = "0.0.3"
 s.summary      = "iOS项目中，彩色圆环的动态滚动"
 s.homepage     = "https://github.com/WQiOS/WQCircleProgress"
 s.license      = "MIT"
