@@ -81,6 +81,8 @@ static CGFloat endPointMargin = 1.0f;
 
 - (void)setProgress:(float)progress {
     _progress = progress;
+    _endPoint.alpha = 0;
+    _endPoint.hidden = YES;
     _progressLayer.strokeEnd = progress;
     [self updateEndPoint];
     [_progressLayer removeAllAnimations];
@@ -108,7 +110,8 @@ static CGFloat endPointMargin = 1.0f;
     [animationGroup setAnimations:[NSArray arrayWithObjects:anim1, opacityAnimation, nil]];
     [_progressLayer addAnimation:animationGroup forKey:@"animationGroup"];
 }
-- (void)endPiontStarAnimation{
+
+- (void)endPiontStarAnimation {
     // 先缩小
     _endPoint.transform = CGAffineTransformMakeScale(1.5, 1.5);
     // 弹簧动画，参数分别为：时长，延时，弹性（越小弹性越大），初始速度
@@ -119,11 +122,11 @@ static CGFloat endPointMargin = 1.0f;
     
   
 }
-- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag{
+
+- (void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag {
        [_progressLayer removeAllAnimations];
         _endPoint.hidden = NO;
         [self endPiontStarAnimation];
-  
 }
 
 //更新小点的位置
@@ -160,7 +163,7 @@ static CGFloat endPointMargin = 1.0f;
         default:
             break;
     }
-    
+
     //更新圆环的frame
     CGRect rect = _endPoint.frame;
     rect.origin.x = x + endPointMargin;
@@ -170,6 +173,13 @@ static CGFloat endPointMargin = 1.0f;
     [self bringSubviewToFront:_endPoint];
     if (_progress == 0 || _progress == 1) {
         _endPoint.hidden = true;
+    }else{
+        _endPoint.hidden = NO;
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            [UIView animateWithDuration:0.4f animations:^{
+                _endPoint.alpha = 1.0;
+            }];
+        });
     }
 }
 
